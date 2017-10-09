@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+      body {
+          font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+          color: rgb(128,128,128);
+      }    
+      .axis--x path {
+        display: none;
+      }
+
+      .line {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+      }
+      .legend {
+          font-size: 10px;
+          fill: rgb(0, 0, 0);
+          font-weight: normal;
+          text-anchor: start;
+      }      
+
+    </style>
+  </head>
+  <body>
+    <svg width="700" height="500"></svg>
+    <script>
+
+    var svg = d3.select("svg"),
+        margin = {top: 20, right: 80, bottom: 50, left: 50},
+        width = svg.attr("width") - margin.left - margin.right,
+        height = svg.attr("height") - margin.top - margin.bottom,
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear().range([0, width]),
+        y = d3.scaleLinear().range([height, 0]),
+        z = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var line = d3.line()
+                 .curve(d3.curveBasis)
+                 .x(function(d) { return x(d.hora); })
+                 .y(function(d) { return y(d.accidentes); });
+
+    d3.tsv("data_multilines.tsv", function(error, data) {
+      if (error) throw error;
+
+      var dias = data.columns.slice(1).map(function(id) {
+        return {
+          id: id,
+          values: data.map(function(d) {
+            return {
+                    hora: +d.hora, 
+                    accidentes: +d[id]
+                  };
+          })
+        };
+      });
+
+      x.domain([0, d3.max(dias, function(c) { return d3.max(c.values, function(d) { return d.hora; }); })]);
+      y.domain([0, d3.max(dias, function(c) { return d3.max(c.values, function(d) { return d.accidentes; }); })]);
+      z.domain(dias.map(function(c) { return c.id; }));
+
+      g.append("g")
+          //.attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x).ticks(24))
+          .append("text")
+          .attr("y", 0)
+          .attr("x", width + 15)
+          .attr("fill", "#000")
+          .text("Hora");
+
+      g.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3.axisLeft(y))
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", "0.71em")
+          .attr("fill", "#000")
+          .text("Número de Accidentes");
+
+      var dia = g.selectAll(".city")
+                 .data(dias)
+                 .enter().append("g")
+                 .attr("class", "city");
+
+      dia.append("path")
+          .attr("class", "line")
+          .attr("d", function(d) { return line(d.values); })
+          .style("stroke", function(d) { return z(d.id); });
+
+      dia.append("text")
+         .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+         .attr("transform", function(d, i) { return "translate(" + 600 + "," + (i*20) + ")"; })
+         .attr("dy", "1em")
+         .attr("class", "legend")
+         .text(function(d) { return d.id; });
+
+      dia.append("rect")
+         .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+         .attr("transform", function(d, i) { return "translate(" + 580 + "," + (i*20) + ")"; })
+         .attr("width", 15)
+         .attr("height", 15)
+         .attr("fill", function (d) { return z(d.id); });
+
+
+
+    });
+/*
+     var labels = ["Desde 24 hasta 44 accidentes"
+            ,"Desde 45 hasta 65 accidentes"
+            ,"Desde 66 hasta 85 accidentes"
+            ,"Desde 86 hasta 105 accidentes"
+            ,"106 accidentes o más"]
+         ,legend = grid.selectAll(".legend")
+                       .data(labels);
+      legend.enter()
+            .append("rect")
+            .attr("width", cellWidth)
+            .attr("height", cellHeight)
+            .attr("fill", function (d, i) { return colors[i]; })
+            .attr("x", 0)
+            .attr("y", function (d, i) { return i * cellHeight; });
+      legend.enter()
+            .append("text")
+            .attr("class", "legend")
+            .attr("y", function (d, i) { return i * cellWidth + 20; })
+            .attr("x", cellWidth + 10)
+            .text(function (d, i) { return labels[i]; });*/
+
+    </script>
+  </body>
+</html>
