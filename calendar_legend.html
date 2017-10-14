@@ -7,51 +7,63 @@
       body {
           font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
           color: rgb(128,128,128);
-      }     
+      }
       .legend {
           font-size: 13px;
           fill: rgb(0, 0, 0);
           font-weight: normal;
           text-anchor: start;
       }
-    </style>    
+    </style>
   </head>
   <body>
     <div id="calendar_legend">
     <script>
-      var width = 300
-         ,height = 150
-         ,cellWidth = 30
-         ,cellHeight = 30
-         ,grid = d3.select("#calendar_legend")
-                   .append("svg")
-                   .attr("width", width )
-                   .attr("height", height )
-                   .append("g")
-                   .attr("transform", "translate(" + 10 + "," + 0 + ")")
-         ,colors = ["#ffffb2","#fecc5c","#fd8d3c","#f03b20","#bd0026"];
+    var width = 300,
+	height = 150,
+	cellWidth = 30,
+	cellHeight = 30,
+	grid = d3
+		.select('#calendar_legend')
+		.append('svg')
+		.attr('width', width)
+		.attr('height', height)
+		.append('g')
+		.attr('transform', 'translate(' + 10 + ',' + 0 + ')'),
+	colors = ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'];
 
-     var labels = ["Desde 24 hasta 44 accidentes"
-     			  ,"Desde 45 hasta 65 accidentes"
-     			  ,"Desde 66 hasta 85 accidentes"
-     			  ,"Desde 86 hasta 105 accidentes"
-     			  ,"106 accidentes o más"]
-         ,legend = grid.selectAll(".legend")
-                       .data(labels);
-      legend.enter()
-            .append("rect")
-            .attr("width", cellWidth)
-            .attr("height", cellHeight)
-            .attr("fill", function (d, i) { return colors[i]; })
-            .attr("x", 0)
-            .attr("y", function (d, i) { return i * cellHeight; });
-      legend.enter()
-            .append("text")
-            .attr("class", "legend")
-            .attr("y", function (d, i) { return i * cellWidth + 20; })
-            .attr("x", cellWidth + 10)
-            .text(function (d, i) { return labels[i]; });
-    </script>
+var labels = [
+		'Desde 24 hasta 44 accidentes',
+		'Desde 45 hasta 65 accidentes',
+		'Desde 66 hasta 85 accidentes',
+		'Desde 86 hasta 105 accidentes',
+		'106 accidentes o más'
+	],
+	legend = grid.selectAll('.legend').data(labels);
+legend
+	.enter()
+	.append('rect')
+	.attr('width', cellWidth)
+	.attr('height', cellHeight)
+	.attr('fill', function(d, i) {
+		return colors[i];
+	})
+	.attr('x', 0)
+	.attr('y', function(d, i) {
+		return i * cellHeight;
+	});
+legend
+	.enter()
+	.append('text')
+	.attr('class', 'legend')
+	.attr('y', function(d, i) {
+		return i * cellWidth + 20;
+	})
+	.attr('x', cellWidth + 10)
+	.text(function(d, i) {
+		return labels[i];
+	});
+</script>
   </div>
   </body>
 </html>
